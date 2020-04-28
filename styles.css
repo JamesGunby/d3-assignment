@@ -1,0 +1,268 @@
+.App {
+    text-align: center;
+    background: rgba(21,21,21,0.8)
+}
+
+.background {
+    display: inline-block;
+    background-image: url("background.jpg");
+    position: center;
+    width: 1200px;
+    height: 2360px;
+}
+
+.titlePortion {
+    width: 1200px;
+    height: 450px;
+}
+
+.dataPortion {
+    height: 1910px;
+    margin-left: 55px;
+    margin-right: 55px;
+    margin-bottom: 55px;
+}
+
+.description {
+    padding-top: 20px;
+    width: 100%;
+    height: 180px;
+}
+
+.description p {
+    font-family: Arial, sans-serif;
+    color: #6a686b;
+}
+
+.emergingTechnologies {
+    width: 579px;
+    height: 400px;
+}
+
+.sectionTitle {
+    width: 580px;
+    height: 80px;
+    padding-left: 50px;
+}
+
+.sectionTitle p:first-child {
+    text-align: left;
+    font-family: Arial, sans-serif;
+    font-size: 22px;
+    color: #6a686b;
+}
+
+.sectionTitle p:last-child {
+    text-align: left;
+    margin-top: -25px;
+    font-family: Arial, sans-serif;
+    font-size: 35px;
+    color: #6a686b;
+}
+
+.sectionTitleFlipped {
+    width: 580px;
+    height: 80px;
+    padding-left: 50px;
+}
+
+.sectionTitleFlipped p:first-child {
+    text-align: left;
+    font-family: Arial, sans-serif;
+    font-size: 35px;
+    color: #6a686b;
+}
+
+.sectionTitleFlipped p:last-child {
+    text-align: left;
+    margin-top: -30px;
+    font-family: Arial, sans-serif;
+    font-size: 22px;
+    color: #6a686b;
+}
+
+.dataSectionRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.etDonutChart {
+    width: 280px;
+    height: 300px;
+}
+
+.etLabel {
+    font-family: Arial, sans-serif;
+    width: 170px;
+    overflow: auto;
+    font-weight: bold;
+}
+
+.etLegend {
+    width: 297px;
+    height: 300px;
+}
+
+.challenges {
+    width: 100%;
+    height: 400px;
+}
+
+.iconArea {
+    width: 510px;
+    height: 300px;
+}
+
+.constrainedIconArea {
+    width: 424px;
+    height: 256px;
+    display: flex;
+    flex-direction: column;
+    padding-left: 60px;
+    padding-top: 20px;
+}
+
+.challengeRow {
+    width: 424px;
+    height: 80px;
+    display: flex;
+    flex-direction: row;
+}
+
+.challengeColumn {
+    width: 212px;
+    height: 80px;
+    display: flex;
+    flex-direction: row;
+}
+
+.icon {
+    width: 72px;
+    height: 72px;
+}
+
+.aiMLCOG {
+    width: 424px;
+    height: 80px;
+    display: flex;
+    flex-direction: row;
+}
+
+.challengeText {
+    display: flex;
+    padding-top: 15px;
+    padding-left: 10px;
+    flex-direction: column;
+}
+
+.challengeText div:only-child {
+    display: flex;
+    padding-top: 15px;
+    padding-left: 10px;
+    flex-direction: column;
+}
+
+.challengeText div {
+    height: 20px;
+    font-family: Arial, sans-serif;
+    overflow: auto;
+    text-align: left;
+    vertical-align: center;
+    font-weight: bold;
+    color: #e87e34;
+}
+
+.evaluatingOpportunities {
+    width: 490px;
+    height: 364px;
+    padding-top: 5px;
+}
+
+.oppBarArea {
+    width: 490px;
+    height: 250px;
+    display: flex;
+    flex-direction: row;
+}
+
+.innerBarArea {
+    height: 250px;
+    width: 216px;
+}
+
+.eoPercentage {
+    font-size: 50px;
+    font-family: Arial, sans-serif;
+    vertical-align: center;
+    font-weight: bold;
+    fill: #e67f3c;
+}
+
+.eoDescriptionA {
+    font-family: Arial, sans-serif;
+    fill: #868686;
+}
+
+.eoDescriptionB {
+    font-family: Arial, sans-serif;
+    fill: #545454;
+    font-weight: bold;
+}
+.centreDivideBar {
+    height: 250px;
+    width: 3px;
+}
+
+.responsibilities {
+    width: 600px;
+}
+
+.respPercentage {
+    font-size: larger;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+}
+
+.respName {
+    fill: #ff6b27;
+    font-size: larger;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+}
+
+.dtvBarLegendTitleArea {
+    height: 393px;
+    width: 100%;
+}
+
+.digitalLiteracy {
+    height: 330px;
+    width: 540px;
+}
+
+.dlLabels {
+    font-family: Arial, sans-serif;
+    fill: #f16613;
+    text-anchor: middle;
+    font-weight: bold;
+}
+
+.receptionToEmergingTech {
+    width: 550px;
+    height: 340px;
+}
+
+.retPercentage {
+    font-family: Arial, sans-serif;
+    fill: #6b6b6b;
+    font-size: 30px;
+    text-anchor: middle;
+    font-weight: bold;
+}
+
+.retLabel {
+    font-family: Arial, sans-serif;
+    fill: #6b6b6b;
+    text-anchor: middle;
+    font-weight: bold;
+}

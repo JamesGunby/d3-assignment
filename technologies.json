@@ -1,0 +1,30 @@
+[
+	{
+		"tech": "Big Data Analytics",
+		"value": 38
+	},
+	{
+		"tech": "AI/Machine Learning/Cognitive",
+		"value": 20
+	},
+	{
+		"tech": "Public Cloud",
+		"value": 18
+	},
+	{
+		"tech": "IoT",
+		"value": 14
+	},
+	{
+		"tech": "Blockchain",
+		"value": 7
+	},
+	{
+		"tech": "AR/VR",
+		"value": 2
+	},
+	{
+		"tech": "3D Printing",
+		"value": 1
+	}
+]

@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>D3 Test</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="text/javascript" src="d3/d3.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+        /*First the entire board needs to be mapped out. This will include implementing the background image.*/
+        const board = d3.select("body")
+            .append("div")
+            .attr("class", "App")
+            .append("div")
+            .attr("class", "background")
+            .attr("id", "background");
+
+        /*separates the title portion of the background from the parts of the background that will have content made on top of.*/
+        board.append("div")
+            .attr("class", "titlePortion");
+
+        /*Data section is the area where the data will be added and displayed.*/
+        const dataSection = board.append("div")
+            .attr("class", "dataPortion");
+
+        /*This section contains the poster's top description.*/
+        const description = dataSection.append("div")
+            .attr("class", "description");
+
+        description.append("p")
+            .text("ISACA's 2017 Digital Transformation Barometer - research of more than 4,100 business technology professionals worldwide-");
+        description.append("p")
+            .text("found that the emerging technologies that are the most transformational also pose the most organizational challenges in");
+        description.append("p")
+            .text("terms of perceived risk and resistance to change. To enable a successful digital transformation journey, enterprises require strong");
+        description.append("p")
+            .text("governance and risk management programs, which drive confidence and enable the speed of business");
+
+        /*Creates the row that has the Emerging Technologies and Challenges/Resistances sections.*/
+        const technologiesAndChallenges = dataSection.append("div")
+            .attr("class", "dataSectionRow");
+
+        generateEmergingTechnologies();
+
+        generateChallenges();
+
+        /*Creates the row that has the Evaluating Opportunities and Responsible sections.*/
+        const opportunitiesAndResponsibilities = dataSection.append("div")
+            .attr("class", "dataSectionRow");
+
+        generateEvaluatingOpportunities();
+
+        generateResponsibilities();
+
+        /*Creates the Deliver Transformational Value row.*/
+        const transformationalValue = dataSection.append("div")
+            .attr("class", "dataSectionRow");
+
+        generateTransformationalValues();
+
+        /*Creates the row that has the Digitally Literate and Receptive to Emerging Tech sections.*/
+        const literacyAndReception = dataSection.append("div")
+            .attr("class", "dataSectionRow");
+
+        generateDigitalLiteracy();
+
+        generateReceptionToEmergingTech();
+
+        /*Creates the closing box with link.*/
+        const closer = dataSection.append("div")
+            .attr("class", "description")
+            .style("padding-top", "10px");
+
+        closer.append("p")
+            .text("Companies with digitally literate leaders are more aggressive and receptive to evaluating and adopting");
+        closer.append("p")
+            .text("emerging technologies in their quests to achieve digital transformation.");
+        closer.append("p")
+            .text("For more information: www.isaca.org/digital-transformation-barometer")
+            .style("font-weight", "bold")
+            .style("padding-top", "10px");
+
+        /*This function creates the Emerging Technologies box.*/
+        function generateEmergingTechnologies() {
+            const emergingTechnologies = technologiesAndChallenges.append("div")
+                .attr("class", "emergingTechnologies");
+
+            /*Title is first isolated.*/
+            const etTitle = emergingTechnologies.append("div")
+                .attr("class", "sectionTitle");
+
+            etTitle.append("p")
+                .text("Top Motivators for Implementing an");
+            etTitle.append("p")
+                .text("Emerging Technology");
+
+            /*Used to separate the donut chart and the legend. Later discovered this was redundant.*/
+            const etChartAndLegend = emergingTechnologies.append("div")
+                .attr("class", "dataSectionRow");
+
+            const etDonutChart = etChartAndLegend.append("div")
+                .attr("class", "etDonutChart");
+
+            /*SVG created that will contain the donut.*/
+            const donutSVG = etDonutChart.append("svg")
+                .attr("width", 280)
+                .attr("height", 300)
+                .append("g")
+                .attr("transform", "translate(140, 150)");
+
+            /*Creates the colour options for the donut.*/
+            const donutColours = d3.scaleOrdinal()
+                .domain(["Anticipated Cost Savings", "New Revenue Stream", "Ability to Reach New Customers", "Increased Agility", "Reputational Value", "A Customer's Successful Implementation"])
+                .range(["#d56734", "#f78644", "#f9a334", "#ffba45", "#fdcf84", "#fee5bc"]);
+
+            /*Creates the pie chart that will later be converted into a donut chart*/
+            const donutPie = d3.pie()
+                .sort(null)
+                .value((d) => {
+                    return d.value.percentage;
+                });
+
+            /*Provides the radius values for the inner hole of the donut.*/
+            const innerHole = d3.arc()
+                .innerRadius(90)
+                .outerRadius(60);
+
+            /*Will be used to map the length and locations of the label lines.*/
+            const labelPos = d3.arc()
+                .innerRadius(100)
+                .outerRadius(100);
+
+            /*Pulling JSON data.*/
+            d3.json("./motivators.json")
+                .then((data) =>{
+                        /*Puts the JSON data into a format that is used by D3 pie charts.*/
+                        const pieData = donutPie(d3.entries(data));
+
+                        /*Creates the donut chart, using the pie chart.*/
+                        donutSVG.selectAll()
+                            .data(pieData)
+                            .enter()
+                            .append("path")
+                            .attr("d", innerHole)
+                            .attr("fill", (d) => {
+                                return (donutColours(d.data.value.motivator));
+                            })
+                            .on("mouseover", (d) => {
+                                d3.select("#etLegend" + d.data.value.percentage)
+                                    .transition()
+                                    .duration(200)
+                                    .attr("width", 280);
+                                //Changes the colour to white only if the legend's background will be too dark.
+                                if (d.data.value.percentage > 20) {
+                                    d3.select("#etText" + d.data.value.percentage)
+                                        .transition()
+                                        .duration(100)
+                                        .attr("fill", "white");
+                                }
+                            })
+                            .on("mouseout", (d) => {
+                                d3.select("#etLegend" + d.data.value.percentage)
+                                    .transition()
+                                    .duration(200)
+                                    .attr("width", 20);
+                                d3.select("#etText" + d.data.value.percentage)
+                                    .transition()
+                                    .duration(100)
+                                    .attr("fill", "#6a686b");
+                            });
+
+                        /*Adds the label lines to each slice of the donut chart.*/
+                        donutSVG.selectAll()
+                            .data(pieData)
+                            .enter()
+                            .append("polyline")
+                            .attr("stroke", "black")
+                            .attr("points", function(d){
+                                return ([innerHole.centroid(d), labelPos.centroid(d)]);
+                            })
+                            .select("text")
+                            .append("text")
+                            .text(function(d) {return d.data.value.percentage + "%";});
+
+                        /*Adds the percentages to the donut slices at the ends of the label lines.*/
+                        donutSVG.selectAll()
+                            .data(pieData)
+                            .enter()
+                            .append("text")
+                            .text(function(d) {return d.data.value.percentage + "%";})
+                            .attr("transform", function(d) {
+                                const position = labelPos.centroid(d);
+                                position[0] *= 1.08;
+                                position[1] *= 1.08;
+                                return "translate(" + position + ")";
+                            })
+                            .attr("class", "etLabel")
+                            .style("text-anchor", function(d){
+                                /*Determines whether the line points left, right or down, and anchors the percentage to appear on the appropriate end.*/
+                                const angle = d.startAngle + (d.endAngle - d.startAngle)/2;
+                                if (angle > 3.1 && angle < 3.2) return ("middle");
+                                return (angle < Math.PI ? "start" : "end");
+                            })
+                    }
+                );
+
+            const etLegend = etChartAndLegend.append("div")
+                .attr("class", "etLegend");
+
+            /*Creates the SVG for the legend.*/
+            const legendSVG = etLegend.append("svg")
+                .attr("width", 300)
+                .attr("height", 300)
+                .attr("transform", "translate(0, 50)");
+
+            d3.json("./motivators.json")
+                .then((data) =>{
+                        /*To get the data to be arrange as it shows on the target image, the JSON data had to be arranged in a certain way.
+                          This arrangement causes the legend to have a different order. As such, the data needs to be sorted.*/
+                        data.sort((d1, d2) => {
+                            if (d1.percentage > d2.percentage) {
+                                return -1;
+                            }
+                            if (d2.percentage > d1.percentage) {
+                                return 1;
+                            }
+                            return 0;
+                        });
+
+                        /*Creates the rectangles for the legend.*/
+                        legendSVG.selectAll("rects")
+                            .data(data)
+                            .enter()
+                            .append("rect")
+                            .attr("id", (d) => {
+                                return "etLegend" + d.percentage;
+                            })
+                            .attr("width", 20)
+                            .attr("height", 20)
+                            .attr("fill", (d) => {
+                                return (donutColours(d.motivator));
+                            })
+                            .attr("transform", (d, i) => {
+                                return "translate(0, " + i * 35 + ")";
+                            });
+
+                        /*Adds text to the legend rectangles. The text does not wrap.*/
+                        legendSVG.selectAll("text")
+                            .data(data)
+                            .enter()
+                            .append("text")
+                            .attr("fill", "#6a686b")
+                            .attr("id", (d) => {
+                                return "etText" + d.percentage;
+                            })
+                            .text((d) => {
+                                return d.motivator;
+                            })
+                            .attr("class", "etLabel")
+                            .attr("transform", (d, i) => {
+                                return "translate(25, " + ((i * 35) + 17)  + ")";
+                            });
+
+                    }
+                );
+        }
+
+        /*This function creates the Challenges or Resistance box.*/
+        function generateChallenges() {
+            const challenges = technologiesAndChallenges.append("div")
+                .attr("class", "challenges");
+
+            challengesTitle = challenges.append("div")
+                .attr("class", "sectionTitle");
+
+            challengesTitle.append("p")
+                .text("Technologies Facing the Most Organization");
+            challengesTitle.append("p")
+                .text("Challenges or Resistance");
+
+            const iconArea = challenges.append("div")
+                .attr("class", "iconArea");
+
+            const iconAreaSVG = iconArea.append("div")
+                .attr("class", "constrainedIconArea");
+
+            const aiMLCOG = iconAreaSVG.append("div")
+                .attr("class", "aiMLCOG");
+
+            /*The topmost technology is displayed different from the rest.*/
+            aiMLCOG.append("div")
+                .attr("class", "icon")
+                .append("img")
+                .attr("src", "image1.jpg");
+            const aiMLCOGText = aiMLCOG.append("div")
+                .attr("class", "challengeText");
+            aiMLCOGText.append("div")
+                .text("AI/Machine Learning/");
+            aiMLCOGText.append("div")
+                .text("Cognitive Tech");
+
+            /*Remaining technologies are displayed like a 2x2 table.*/
+            const pcitRow = iconAreaSVG.append("div")
+                .attr("class", "challengeRow");
+
+            const publicCloud = pcitRow.append("div")
+                .attr("class", "challengeColumn");
+            publicCloud.append("div")
+                .attr("class", "icon")
+                .append("img")
+                .attr("src", "image2.jpg");
+            publicCloud.append("div")
+                .attr("class", "challengeText")
+                .append("div")
+                .text("Public Cloud");
+
+            const internetOfThings = pcitRow.append("div")
+                .attr("class", "challengeColumn");
+            internetOfThings.append("div")
+                .attr("class", "icon")
+                .append("img")
+                .attr("src", "image4.jpg");
+            const internetOfThingsText = internetOfThings.append("div")
+                .attr("class", "challengeText");
+            internetOfThingsText.append("div")
+                .text("Internet of");
+            internetOfThingsText.append("div")
+                .text("Things");
+
+            const bcbdRow = iconAreaSVG.append("div")
+                .attr("class", "challengeRow");
+
+            const blockChain = bcbdRow.append("div")
+                .attr("class", "challengeColumn");
+            blockChain.append("div")
+                .attr("class", "icon")
+                .append("img")
+                .attr("src", "image3.jpg");
+            blockChain.append("div")
+                .attr("class", "challengeText")
+                .append("div")
+                .text("Blockchain");
+
+            const bigData = bcbdRow.append("div")
+                .attr("class", "challengeColumn");
+            bigData.append("div")
+                .attr("class", "icon")
+                .append("img")
+                .attr("src", "image5.jpg");
+            const bigDataText = bigData.append("div")
+                .attr("class", "challengeText");
+            bigDataText.append("div")
+                .text("Big Data");
+            bigDataText.append("div")
+                .text("Analytics");
+        }
+
+        /*This function creates the Evaluating Opportunities box.*/
+        function generateEvaluatingOpportunities() {
+            const evaluatingOpportunities = opportunitiesAndResponsibilities.append("div")
+                .attr("class", "evaluatingOpportunities");
+
+            const eoTitle = evaluatingOpportunities.append("div")
+                .attr("class", "sectionTitleFlipped");
+
+            eoTitle.append("p")
+                .text("Evaluating Opportunities");
+            eoTitle.append("p")
+                .text("Arising From Emerging Technologies");
+
+            /*This is the area the bars will be placed in.*/
+            const barArea = evaluatingOpportunities.append("div")
+                .attr("class", "oppBarArea");
+
+            d3.json("./rarelyEvaluated.json").then((d) => {
+                const leftBarArea = barArea.append("div")
+                    .attr("class", "innerBarArea");
+
+                const rarelyEvaluateBar = leftBarArea.append("svg")
+                    .attr("width", 110)
+                    .attr("height", 22)
+                    .attr("transform", "translate(30, 70)");
+
+                /*Creates the background bar.*/
+                rarelyEvaluateBar.append("rect")
+                    .attr("width", 110)
+                    .attr("height", 22)
+                    .attr("fill", "#ffe9c7");
+                /*The bar that displayed the percentage is placed stop the background bar.*/
+                rarelyEvaluateBar.append("rect")
+                    .attr("width", d.percentage)
+                    .attr("height", 22)
+                    .attr("fill", "#fcb344");
+
+                /*Creates the large percentage sign above the bar.*/
+                leftBarArea.append("svg")
+                    .attr("width", 120)
+                    .attr("height", 55)
+                    .attr("transform", "translate(30,-12)")
+                    .append("text")
+                    .attr("transform", "translate(15,40)")
+                    .attr("class", "eoPercentage")
+                    .text("" + d.percentage + "%");
+
+                /*Creates the description below the bar.*/
+                const reDescription = leftBarArea.append("svg")
+                    .attr("width", 120)
+                    .attr("height", 55)
+                    .attr("transform", "translate(30, 10)");
+                reDescription.append("text")
+                    .attr("class", "eoDescriptionA")
+                    .attr("transform", "translate(12, 20)")
+                    .text("organizations");
+                reDescription.append("text")
+                    .attr("class", "eoDescriptionB")
+                    .attr("transform", "translate(5, 40)")
+                    .text("rarely evaluate");
+
+
+                /*Background did not come with the divider between the two bar graphs in the target image. This creates it.*/
+                const centreDivideBar = barArea.append("div")
+                    .attr("class", "centreDivideBar");
+
+                centreDivideBar.append("svg")
+                    .attr("width", 3)
+                    .attr("height", 250)
+                    .append("rect")
+                    .attr("width", 2)
+                    .attr("height", 147)
+                    .attr("transform", "translate(0,10)")
+                    .attr("fill", "#cacaca");
+
+                /*Needed to next this JSON pull, otherwise the divider will get rendered at the wrong time.*/
+                d3.json("./frequentlyEvaluated.json").then((d) => {
+                    /*Identical to left bar.*/
+                    const rightBarArea = barArea.append("div")
+                        .attr("class", "innerBarArea");
+
+                    const frequentlyEvaluateBar = rightBarArea.append("svg")
+                        .attr("width", 110)
+                        .attr("height", 22)
+                        .attr("transform", "translate(-30, 70)");
+
+                    frequentlyEvaluateBar.append("rect")
+                        .attr("width", 110)
+                        .attr("height", 22)
+                        .attr("fill", "#ffe9c7");
+                    frequentlyEvaluateBar.append("rect")
+                        .attr("width", d.percentage)
+                        .attr("height", 22)
+                        .attr("fill", "#fcb344");
+
+                    rightBarArea.append("svg")
+                        .attr("width", 120)
+                        .attr("height", 55)
+                        .attr("transform", "translate(-30,-12)")
+                        .append("text")
+                        .attr("transform", "translate(10,40)")
+                        .attr("class", "eoPercentage")
+                        .text("" + d.percentage + "%");
+
+                    const feDescription = rightBarArea.append("svg")
+                        .attr("width", 150)
+                        .attr("height", 55)
+                        .attr("transform", "translate(-30, 10)");
+                    feDescription.append("text")
+                        .attr("class", "eoDescriptionA")
+                        .attr("transform", "translate(27, 20)")
+                        .text("organizations");
+                    feDescription.append("text")
+                        .attr("class", "eoDescriptionB")
+                        .attr("transform", "translate(5, 40)")
+                        .text("frequently evaluate");
+                });
+            });
+        }
+
+        /*Creates the Who is Responsible box.*/
+        function generateResponsibilities() {
+            const responsibilities = opportunitiesAndResponsibilities.append("div")
+                .attr("class", "responsibilities");
+
+            const respTitle = responsibilities.append("div")
+                .attr("class", "sectionTitleFlipped");
+
+            respTitle.append("P")
+                .text("Who is Responsible");
+            respTitle.append("p")
+                .text("for Evaluating Emerging Technologies");
+
+            const respBarArea = responsibilities.append("svg")
+                .attr("width", 600)
+                .attr("height", 260)
+                .attr("transform", "translate(40, 0)");
+
+            d3.json("./responsible.json").then((d) => {
+                let mousedOver = false;
+
+                /*Creates the bars. The bars have approximately 6 pixels per 1% in the target image.*/
+                respBarArea.selectAll("rect")
+                    .data(d)
+                    .enter()
+                    .append("rect")
+                    .attr("id", ((data, i) => {
+                        return "resp" + i;
+                    }))
+                    .attr("height", 35)
+                    .attr("width", (data) =>{
+                        return 6.1*data.percentage;
+                    })
+                    .attr("fill", "#fcb344")
+                    .attr("transform", (data, i) => {
+                        /*Translate calculated as i*(# pixles between start of bar and start of next bar) + (# pixles between bars), based off target image.*/
+                        return "translate(0," + ((i*40) + 8) + ")";
+                    })
+                    .on("mouseover", (data, i) => {
+                        const currentWidth = d3.select("#resp" + i).attr("width");
+                        if (!mousedOver && currentWidth >= 6.1*data.percentage) {
+                            mousedOver = true;
+                            d3.select("#resp" + i)
+                                .attr("width", 0)
+                                .transition()
+                                .duration(250)
+                                .attr("width", () => {
+                                    return 6.1 * data.percentage;
+                                });
+                            d3.select("#respText" + i)
+                                .attr("transform", () => {
+                                    return "translate(0," + ((i*40) + 31) + ")";
+                                })
+                                .transition()
+                                .duration(250)
+                                .attr("transform", (data) => {
+                                    return "translate(" + ((data.percentage * 6) + 20) + "," + ((i*40) + 31) + ")";
+                                })
+
+
+                        }
+                    })
+                    .on("mouseout", (data) => {
+                        mousedOver = false;
+                    });
+
+                /*Adds the percentage text to the bars. Uses the transform coordinates of the bars and modifies them.*/
+                respBarArea.selectAll()
+                    .data(d)
+                    .enter()
+                    .append("text")
+                    .text((data) => {
+                        return "" + data.percentage + "%";
+                    })
+                    .attr("transform", (data, i) => {
+                        return "translate(10," + ((i*40) + 31) + ")";
+                    })
+                    .attr("fill", "white")
+                    .attr("class", "respPercentage");
+
+                /*Adds the labels to the bars.*/
+                respBarArea.selectAll()
+                    .data(d)
+                    .enter()
+                    .append("text")
+                    .attr("id", (data, i) => {
+                        return "respText" + i;
+                    })
+                    .text((data) => {
+                        return data.responsible;
+                    })
+                    .attr("transform", (data, i) => {
+                        return "translate(" + ((data.percentage * 6) + 20) + "," + ((i*40) + 31) + ")";
+                    })
+                    .attr("class", "respName");
+            });
+        }
+
+        /*Creates the Deliver Transformational Value box.*/
+        function generateTransformationalValues() {
+            const dtvBarLegendTitleArea = transformationalValue.append("div")
+                .attr("class", "dtvBarLegendTitleArea");
+
+            const dtvTitle = dtvBarLegendTitleArea.append("div")
+                .attr("class", "sectionTitle");
+
+            dtvTitle.append("p")
+                .text("Technologies With Most Potential to");
+            dtvTitle.append("p")
+                .text("Deliver Transformational Value");
+
+            //Since this component had a legend that is next to and goes before the title div, svg needs to be translated up
+            dtvSvg = dtvBarLegendTitleArea.append("svg")
+                .attr("width", 1090)
+                .attr("height", 393)
+                .attr("transform", "translate(0, -100)");
+
+            /*Creates the colour range based on the target image's colours.*/
+            const dtvColours = d3.interpolate("#fbf6e0", "#e97d35");
+
+            d3.json("./technologies.json").then((d) => {
+                /*Creates the bars.*/
+                dtvSvg.selectAll()
+                    .data(d)
+                    .enter()
+                    .append("rect")
+                    .attr("width", 88)
+                    .attr("height", (data) => {
+                        return data.value * 6;
+                    })
+                    .attr("transform", (data, i) => {
+                        /*y transform uses the svg's height (391px) and subtracts the value*6 (since 6 pixels per 1%) since svg direction has positives go down, not up.*/
+                        return "translate(" + ((i*143) + 62) + "," + (391 - (data.value*6)) + ")";
+                    })
+                    .attr("fill", (data) => {
+                        /*Divided by 38 since the target image only goes from 1 to 38.*/
+                        return dtvColours(data.value/38);
+                    })
+                    .on("mouseover", (data, i) => {
+                        d3.select("#dtvLegend" + i)
+                            .transition()
+                            .duration(200)
+                            .attr("width", 300);
+                        //Changes the colour to white only if the legend's background will be too dark.
+                        if (data.value > 20) {
+                            d3.select("#dtvLabel" + i)
+                                .transition()
+                                .duration(100)
+                                .attr("fill", "white");
+                        }
+                    })
+                    .on("mouseout", (data, i) => {
+                        d3.select("#dtvLegend" + i)
+                            .transition()
+                            .duration(200)
+                            .attr("width", 19);
+                        d3.select("#dtvLabel" + i)
+                            .transition()
+                            .duration(100)
+                            .attr("fill", "#6a686b");
+                    });
+
+                /*Adds the percentages on top of the bars using modified calculations of the bar's transformations.*/
+                dtvSvg.selectAll()
+                    .data(d)
+                    .enter()
+                    .append("text")
+                    .text((data) => {
+                        return (data.value + "%");
+                    })
+                    .attr("transform", (data, i) => {
+                        return "translate(" + ((i*143) + 92) + "," + (380 - (data.value*6)) + ")";
+                    })
+                    .attr("class", "respPercentage")
+                    .attr("fill", "#6d6d6d");
+
+                const legendSvg = dtvBarLegendTitleArea.append("svg")
+                    .attr("width", 330)
+                    .attr("height", 260)
+                    .attr("transform", "translate(250, -480)");
+
+                /*Creates the legend for the bar graph.*/
+                legendSvg.selectAll()
+                    .data(d)
+                    .enter()
+                    .append("rect")
+                    .attr("id", (data, i) => {
+                        return "dtvLegend" + i;
+                    })
+                    .attr("width", 19)
+                    .attr("height", 23)
+                    .attr("fill", (data) => {
+                        return (dtvColours(data.value/38));
+                    })
+                    .attr("transform", (data, i) => {
+                        return "translate(0," + ((i*33) + 10) + ")";
+                    });
+
+                /*Adds the labels to the legend.*/
+                legendSvg.selectAll()
+                    .data(d)
+                    .enter()
+                    .append("text")
+                    .attr("id", (d, i) => {
+                        return "dtvLabel" + i;
+                    })
+                    .text((data) => {
+                        return data.tech;
+                    })
+                    .attr("fill", "#6a686b")
+                    .attr("class", "etLabel")
+                    .attr("transform", (data, i) => {
+                        return "translate(33," + ((i*33) + 27) + ")";
+                    });
+            });
+        }
+
+        /*Creates the Digitally Literate box.*/
+        function generateDigitalLiteracy() {
+            const digitalLiteracy = literacyAndReception.append("div")
+                .attr("class", "digitalLiteracy");
+
+            const dlTitle = digitalLiteracy.append("div")
+                .attr("class", "sectionTitle");
+
+            dlTitle.append("p")
+                .text("Are Your Organization's Leaders");
+            dlTitle.append("p")
+                .text("Digitally Literate");
+
+            const dlSvg = digitalLiteracy.append("svg")
+                .attr("width", 480)
+                .attr("height", 164)
+                .attr("transform", "translate(-15, 0)");
+
+            d3.json("./literacy.json").then((d) => {
+                const innerHole = d3.arc()
+                    .innerRadius(60)
+                    .outerRadius(40);
+
+                /*Creating the pie representing Yes.*/
+                const dlYesPie = d3.pie()
+                    .sort(null)
+                    .value((data) => {
+                        return data;
+                    });
+
+                /*Requires 100-percentage as a slice.*/
+                const yesPieData = dlYesPie([d[0].percentage, 100-d[0].percentage]);
+
+                const yesDLSvg  = dlSvg.append("g")
+                    .attr("transform", "translate(100, 75)");
+
+                /*Forms the Yes donut chart.*/
+                yesDLSvg.selectAll()
+                    .data(yesPieData)
+                    .enter()
+                    .append("path")
+                    .attr("d", innerHole)
+                    .attr("fill", (data) => {
+                        if (data.data === d[0].percentage) return "#fcb342";
+                        return "#ffe9c7";
+                    });
+
+                /*Creating the pie representing No.*/
+                const dlNoPie = d3.pie()
+                    .sort(null)
+                    .value((data) => {
+                        return data;
+                    });
+
+                const noPieData = dlNoPie([d[1].percentage, 100-d[1].percentage]);
+
+                const noDLSvg  = dlSvg.append("g")
+                    .attr("transform", "translate(250, 75)");
+
+                noDLSvg.selectAll()
+                    .data(noPieData)
+                    .enter()
+                    .append("path")
+                    .attr("d", innerHole)
+                    .attr("fill", (data) => {
+                        if (data.data === d[1].percentage) return "#fcb342";
+                        return "#ffe9c7";
+                    });
+
+                /*Creating the pie representing Unsure.*/
+                const dlUnsurePie = d3.pie()
+                    .sort(null)
+                    .value((data) => {
+                        return data;
+                    });
+
+                const unsurePieData = dlUnsurePie([d[2].percentage, 100-d[2].percentage]);
+
+                const unsureDLSvg  = dlSvg.append("g")
+                    .attr("transform", "translate(400, 75)");
+
+                unsureDLSvg.selectAll()
+                    .data(unsurePieData)
+                    .enter()
+                    .append("path")
+                    .attr("d", innerHole)
+                    .attr("fill", (data) => {
+                        if (data.data === d[2].percentage) return "#fcb342";
+                        return "#ffe9c7";
+                    });
+
+                /*Adds the percentages into each donut.*/
+                dlSvg.selectAll()
+                    .data(d)
+                    .enter()
+                    .append("text")
+                    .text((data) => {
+                        return data.answer;
+                    })
+                    .attr("class", "dlLabels")
+                    .attr("transform", (data, i) => {
+                        let xShift;
+                        if (i === 0) {
+                            xShift = 100;
+                        } else if (i === 1) {
+                            xShift = 250;
+                        } else {
+                            xShift = 400;
+                        }
+                        return "translate(" + xShift + ", 155)";
+                    });
+
+                /*Adds the label to each donut.*/
+                dlSvg.selectAll()
+                    .data(d)
+                    .enter()
+                    .append("text")
+                    .text((data) => {
+                        return data.percentage + "%";
+                    })
+                    .attr("class", "respPercentage")
+                    .attr("fill", "#f16613")
+                    .attr("transform", (data, i) => {
+                        let xShift;
+                        if (i === 0) {
+                            xShift = 85;
+                        } else if (i === 1) {
+                            xShift = 235;
+                        } else {
+                            xShift = 385;
+                        }
+                        return "translate(" + xShift + ", 80)";
+                    });
+            });
+        }
+
+        /*Creates the Receptive to Emerging Tech box.*/
+        function generateReceptionToEmergingTech() {
+            const receptionToEmergingTech = literacyAndReception.append("div")
+                .attr("class", "receptionToEmergingTech");
+
+            const retTitle = receptionToEmergingTech.append("div")
+                .attr("class", "sectionTitle");
+
+            retTitle.append("p")
+                .text("Are Your Organization's Leaders");
+            retTitle.append("p")
+                .text("Receptive to Emerging Tech?");
+
+            const retSvg = receptionToEmergingTech.append("svg")
+                .attr("height", 160)
+                .attr("width", 490);
+
+            d3.json("./reception.json").then((d) => {
+                /*Only simple circles needed for these ones since there are no slices.*/
+                let radius = 50;
+                let strokeWidth = 6;
+
+                retSvg.append("circle")
+                    .attr("id", "circle1")
+                    .attr("r", radius)
+                    .attr("fill", "white")
+                    .attr("stroke", "#e87c3e")
+                    .attr("stroke-width", strokeWidth)
+                    .attr("transform", "translate(60, 75)")
+                    .on("mouseover", () => {
+                        d3.select("#circle1")
+                            .transition()
+                            .duration(250)
+                            .attr("r", 55)
+                            .attr("stroke-width", 13);
+                    })
+                    .on("mouseout", () => {
+                        d3.select("#circle1")
+                            .transition()
+                            .duration(250)
+                            .attr("r", radius)
+                            .attr("stroke-width", strokeWidth);
+                    });
+
+                retSvg.append("circle")
+                    .attr("id", "circle2")
+                    .attr("r", radius)
+                    .attr("fill", "white")
+                    .attr("stroke", "#ff994a")
+                    .attr("stroke-width", strokeWidth)
+                    .attr("transform", "translate(185, 75)")
+                    .on("mouseover", () => {
+                        d3.select("#circle2")
+                            .transition()
+                            .duration(250)
+                            .attr("r", 55)
+                            .attr("stroke-width", 13);
+                    })
+                    .on("mouseout", () => {
+                        d3.select("#circle2")
+                            .transition()
+                            .duration(250)
+                            .attr("r", radius)
+                            .attr("stroke-width", strokeWidth);
+                    });
+
+                retSvg.append("circle")
+                    .attr("id", "circle3")
+                    .attr("r", radius)
+                    .attr("fill", "white")
+                    .attr("stroke", "#ffca86")
+                    .attr("stroke-width", strokeWidth)
+                    .attr("transform", "translate(310, 75)")
+                    .on("mouseover", () => {
+                    d3.select("#circle3")
+                        .transition()
+                        .duration(250)
+                        .attr("r", 55)
+                        .attr("stroke-width", 13);
+                    })
+                    .on("mouseout", () => {
+                        d3.select("#circle3")
+                            .transition()
+                            .duration(250)
+                            .attr("r", radius)
+                            .attr("stroke-width", strokeWidth);
+                    });
+
+                retSvg.append("circle")
+                    .attr("id", "circle4")
+                    .attr("r", radius)
+                    .attr("fill", "white")
+                    .attr("stroke", "#fde9c6")
+                    .attr("stroke-width", strokeWidth)
+                    .attr("transform", "translate(435, 75)")
+                    .on("mouseover", () => {
+                        d3.select("#circle4")
+                            .transition()
+                            .duration(250)
+                            .attr("r", 55)
+                            .attr("stroke-width", 13);
+                    })
+                    .on("mouseout", () => {
+                        d3.select("#circle4")
+                            .transition()
+                            .duration(250)
+                            .attr("r", radius)
+                            .attr("stroke-width", strokeWidth);
+                    });
+
+                /*Percentages added to the hole of each circle.*/
+                retSvg.append("text")
+                    .text(d[0].percentage + "%")
+                    .attr("class", "retPercentage")
+                    .attr("transform", "translate(65, 85)");
+
+                retSvg.append("text")
+                    .text(d[1].percentage + "%")
+                    .attr("class", "retPercentage")
+                    .attr("transform", "translate(190, 85)");
+
+                retSvg.append("text")
+                    .text(d[2].percentage + "%")
+                    .attr("class", "retPercentage")
+                    .attr("transform", "translate(315, 85)");
+
+                retSvg.append("text")
+                    .text(d[3].percentage + "%")
+                    .attr("class", "retPercentage")
+                    .attr("transform", "translate(440, 85)");
+
+                /*Labels added to the bottom of each circle.*/
+                retSvg.append("text")
+                    .text(d[0].answer)
+                    .attr("class", "retLabel")
+                    .attr("transform", "translate(60, 150)");
+
+                retSvg.append("text")
+                    .text(d[1].answer)
+                    .attr("class", "retLabel")
+                    .attr("transform", "translate(185, 150)");
+
+                retSvg.append("text")
+                    .text(d[2].answer)
+                    .attr("class", "retLabel")
+                    .attr("transform", "translate(310, 150)");
+
+                retSvg.append("text")
+                    .text(d[3].answer)
+                    .attr("class", "retLabel")
+                    .attr("transform", "translate(435, 150)");
+            });
+        }
+    </script>
+</body>
+</html>

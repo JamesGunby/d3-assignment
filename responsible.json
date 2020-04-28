@@ -1,0 +1,22 @@
+[
+	{
+		"responsible": "Innovation Group",
+		"percentage": 7
+	},
+	{
+		"responsible": "Business Unit",
+		"percentage": 7
+	},
+	{
+		"responsible": "Executive Management",
+		"percentage": 12
+	},
+	{
+		"responsible": "Multiple Groups' Decision",
+		"percentage": 33
+	},
+	{
+		"responsible": "IT Group",
+		"percentage": 39
+	}
+]
