@@ -38,12 +38,12 @@
     var center = width / 2;
 
     var pie = d3.layout.pie()
-        .padAngle(-0.0075)
+        .padAngle(-0.00175)
         .value(function(d) { return d[amount]; })
         .sort(null);
 
     var arc = d3.svg.arc()
-        .innerRadius(radius - 30)
+        .innerRadius(radius - 50)
         .outerRadius(radius - 20)
         .startAngle((d) => d.startAngle + 0.065)
         .endAngle((d) => d.endAngle + 0.065);
