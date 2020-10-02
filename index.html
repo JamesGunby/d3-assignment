@@ -31,26 +31,22 @@
     var arcCurrent;
     var phantomCurrent;
 
-    var width = 480,
-        height = 250,
+    var width = 350,
+        height = 350,
         radius = Math.min(width, height) / 2;
 
     var center = width / 2;
 
     var pie = d3.layout.pie()
-        .padAngle(-0.0075)
+        .padAngle(-0.0005)
         .value(function(d) { return d[amount]; })
         .sort(null);
 
     var arc = d3.svg.arc()
         .innerRadius(radius - 30)
-        .outerRadius(radius - 20)
-        .startAngle((d) => d.startAngle + 0.065)
-        .endAngle((d) => d.endAngle + 0.065);
-    //
-    // var arcPhantom = d3.svg.arc()
-    //     .innerRadius(0)
-    //     .outerRadius(radius - 10);
+        .outerRadius(radius - 10)
+        .startAngle((d) => d.startAngle + 0.05)
+        .endAngle((d) => d.endAngle + 0.05);
 
     var svg = d3.select("body").append("svg")
         .attr("width", width)
@@ -64,38 +60,20 @@
             .enter()
             .append("g")
             .attr("class", "arc")
-            .attr("transform", "rotate(" + 25 + ")")
+            .attr("transform", "rotate(" + 5 + ")")
             .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
             .append("path")
             .attr("fill", function(d, i) {
                 if (i % 2 === 0) {
-                    return "#ff7f0e";
+                    return "#FDB81B";
                 }
                 return "white";
             })
             .attr("d", arc)
             .each(function(d) { this._current = d; }); // store the initial angles
 
-        // var phantomArcs = svg.datum(data).selectAll("g.phantom-arc")
-        //     .data(pie)
-        //     .enter()
-        //     .append("g")
-        //     .attr("class", "phantom-arc")
-        //     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")")
-        //     .append("path")
-        //     .attr("fill", 'white')
-        //     .attr("fill-opacity", 0.1)
-        //     .attr("d", arcPhantom)
-        //     .style('stroke', 'white')
-        //     .style('stroke-width', 5)
-        //     .each(function(d) { this._current = d; });
-
         d3.selectAll("input")
             .on("click", change);
-
-        // var timeout = setTimeout(function() {
-        //     d3.select("input[value=\"add\"]").property("checked", true).each(change);
-        // }, 2000);
 
         function change() {
             var value = this.value;
@@ -112,53 +90,23 @@
                 }
             }
             pie.value(function(d, i) {
+                if (amount === 0) {
+                    return d[1];
+                }
                 return d[amount];
-                // console.log(amount);
-                // if (amount === 0) {
-                //     return 0;
-                // }
-                // if (amount === 1) {
-                //     if (i === 0 || i === 2) {
-                //         return 50;
-                //     }
-                //     return 0;
-                // } else {
-                //     if (i < (amount)) {
-                //         if (i % 2 === 0) {
-                //             return (100 / amount) - 2;
-                //         } else {
-                //             return 1.5;
-                //         }
-                //     } else {
-                //         var breakpoint = amount % 2 === 0 ? amount + 1 : amount;
-                //         if (i === 15 || i === breakpoint) {
-                //             return 1.5;
-                //         } else {
-                //             if (i % 2 === 0) {
-                //                 return d["checked"] + (((100 / amount) - 2) / (8-amount));
-                //             } else {
-                //                 return 0;
-                //             }
-                //         }
-                //     }
-                // }
             }); // change the value function
             path = path.data(pie);
-            // phantomArcs = phantomArcs.data(pie);
-            // phantomArcs.style("stroke", () => {
-            //     if (amount > 1) {
-            //         return "white";
-            //     } else {
-            //         return "none";
-            //     }
-            // })
             path.transition().duration(750).attrTween("d", arcTween);
-            // phantomArcs.transition().duration(750).attrTween("d", (a) => {
-            //     console.log(a);
-            //     return arcTween(a, 2);
-            // });
         }
     });
+
+    var circle = svg
+                .append("circle")
+                .attr("cx", 175)
+                .attr("cy", 175)
+                .attr("r", 150)
+                .style("fill", "#607392");
+
 
     function type(d) {
         d.checked = amount;
@@ -175,13 +123,4 @@
             return arc(i(t));
         };
     }
-
-    function phantomArcTween(a) {
-        var i = d3.interpolate(this._current, a);
-        this._current = i(0);
-        return function(t) {
-            return arcPhantom(i(t));
-        };
-    }
-
 </script>
